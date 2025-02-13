@@ -1,0 +1,31 @@
+#  MacOS
+.DS_Store
+
+# MATLAB drive
+.MATLABDriveTag
+
+
+# MATLAB generated files
+*.asv
+*.m~  
+*.bak
+*.fig  
+*.mat  
+*.mdl  
+*.slxp  
+*.slxc  
+*.mex*  
+
+
+# MATLAB preferences and history
+history.m  
+*.mlhistory  
+*.mlproj  
+*.mldatx  
+*.mlappinstall  
+
+# Logs and crash dumps
+*.log  
+crash_dump.*  
+javaclasspath.txt  
+javalibrarypath.txt  
