@@ -1,13 +1,13 @@
-function model_reduced = markovian_projection_extrap(model, Z0, T, ...
-    P, max_Z, M, dt)
+function model_proj = markovian_projection_extrap(model, Z0, T, ...
+    proj_ind, max_Z, M, dt)
 %Markovian projection for SRN
-% new propensities are estimated with MC and space extrapolation
+% new propensities are estimated with MC and linear space extrapolation
 % -------------------------------------------------------------------------
 %INPUT
 % model         : Stochastic Reaction Network         | object of class SRN
 % Z0            : initial state at time 0             | (d,1) array
 % T             : final time
-% P             : projection matrix                   | (~,d) array
+% proj_ind      : indices of projected species        | (~,d) array
 % max_Z         : 
 % M             : # of samples 
 % dt            : time step for array
@@ -18,14 +18,14 @@ function model_reduced = markovian_projection_extrap(model, Z0, T, ...
 
 %% Project stoichiometric matrix
 
-V_reduced = P * model.V;
+V_reduced = model.V(proj_ind, :);
 % reactions with zero stoichiometric vector
 reactions_ind = any(V_reduced ~= 0, 1);
 V_reduced = V_reduced(:, reactions_ind);
 
 %% 
 
-d_reduced = size(P, 1);
+d_reduced = length(proj_ind);
 r_reduced = size(V_reduced, 2); % # of reactions in reduced model
 nt = ceil(T/dt);                % # of time nodes
 
@@ -39,7 +39,7 @@ for im = 1:M
     for it = 1:nt % save values on on this time grid
         t = min(dt*(it-1), T);        
         Z = Z_path(:, find(t_path >= t, 1));
-        Z_reduced = P*Z;
+        Z_reduced = Z(proj_ind);
 
         if any(Z_reduced > max_Z)
             continue
@@ -61,22 +61,23 @@ a_bar = a_bar ./ counts;
 
 %% extrapolate propensities a_bar
 
-if ndims(a_bar) == 3
-    a_bar = extrapolate_a_bar_2d(a_bar, T, 'nearest');
-elseif ndims(a_bar) == 4
-    a_bar = extrapolate_a_bar_3d(a_bar, T, 'nearest');
+if length(proj_ind) == 2
+    a_bar = extrapolate_a_bar_2d(a_bar, T, 'linear');
+elseif lentgh(proj_ind) == 3
+    a_bar = extrapolate_a_bar_3d(a_bar, T, 'linear');
 else
-    warning(['Extrapolation for a_bar for ' num2str(ndims(a_bar)-2) ' ' ...
-        'projected species is not implimented! Setting unavailable values ' ...
-        'to zero...'])
-    a_bar(isnan(a_bar)) = 0;
+    warning(['Extrapolation for a_bar for ' num2str(length(proj_ind)) ...
+        ' projected species is not implimented! Setting unavailable ' ...
+        'values to zero...'])
 end
+
+a_bar(isnan(a_bar)) = 0;
 
 a_reduced = @(z,t) get_a(a_bar, z, t, dt);
 
 %% Create reduced SRN
 
-model_reduced = SRN(V_reduced, a_reduced);
+model_proj = SRN(V_reduced, a_reduced);
 
 end
 

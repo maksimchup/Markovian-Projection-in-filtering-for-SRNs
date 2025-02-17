@@ -44,7 +44,7 @@ toc
 filter_pf = PF(model, d, M);
 filter_pf.dt = 1e-2;
 
-disp('run PF:')
+disp('running PF:')
 tic
 [X, w, t] = filter_pf.fit(Y_obs, t_obs, Z0);
 toc
@@ -93,6 +93,7 @@ toc
 filter_ffsp_fmp = FFSP(model_fmp, 2, max_S);
 filter_ffsp_fmp.dt = 1e-2;
 
+disp('running FFSP for FMP model...')
 tic 
 pi_fmp = filter_ffsp_fmp.fit(Y_obs, t_obs, Z0(proj_ind));
 toc
@@ -105,7 +106,7 @@ filter_ffsp_fmp= FFSP(model, d, max_S*ones(d-1, 1));
 filter_ffsp_fmp.dt  = 1e-2;
 filter_ffsp_fmp.show_progress = true;
 
-disp('running FFSP for FMP model...')
+disp('running FFSP for full model...')
 tic 
 pi_ffsp  = filter_ffsp_fmp.fit(Y_obs, t_obs, Z0);
 toc
@@ -128,10 +129,10 @@ disp('TAIL ESTIMATION')
 
 
 d = 3;
-tail_est_linear_cascade;
+tail_estimation_linear_cascade;
 
 d = 5;
-tail_est_linear_cascade;
+tail_estimation_linear_cascade;
 
 
 %% plot
