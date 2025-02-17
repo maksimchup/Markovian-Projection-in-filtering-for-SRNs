@@ -2,6 +2,10 @@
 % (figure 3 in the paper)
 % you need to run 'main' first to get *.mat files with simulation results
 %% set plot params
+
+time_hist_1 = 2; % time for hist1
+time_hist_2 = 4.5; % time for hist2
+
 LineWidth = 4;
 
 set(0,'DefaultLineLineWidth', LineWidth)
@@ -12,14 +16,11 @@ set(groot, 'defaultAxesTickLabelInterpreter', 'latex');
 set(groot, 'defaultLegendInterpreter', 'latex'); 
 set(groot, 'defaultTextFontWeight', 'bold'); 
 
-
-
-figure('WindowStyle', 'normal', 'Units', 'Inches', 'Position', [0, 0, 18, 12]);
-tiledlayout(2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
+WindowStyle = 'docked';
 
 %%
-time_hist_1 = 2; % time for hist1
-time_hist_2 = 4.5; % time for hist2
+figure('WindowStyle', WindowStyle, 'Units', 'Inches', 'Position', [0, 0, 18, 12]);
+tiledlayout(2, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
 
 %% Observations vs time
 
@@ -45,7 +46,7 @@ mean_fmp = (0:max_mRNA) * pi_fmp;
 
 subplot2 = nexttile; 
 hold on;
-stairs(t_true, X_true(6, :), 'black', 'LineWidth', LineWidth, 'DisplayName', '\textbf{Hidden trajectory}');
+stairs(t_true, Z_true(estimated_ind, :), 'black', 'LineWidth', LineWidth, 'DisplayName', '\textbf{Hidden trajectory}');
 plot(t, mean_ffsp, 'b', 'DisplayName', '\textbf{FFSP}'); 
 plot(t, mean_mp, 'r', 'DisplayName', '\textbf{Standard MP}'); 
 plot(t, mean_fmp, 'g', 'DisplayName', '\textbf{Filtered MP}'); 
