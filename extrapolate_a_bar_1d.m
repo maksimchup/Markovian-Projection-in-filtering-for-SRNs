@@ -1,8 +1,15 @@
-function a_bar = extrapolate_a_bar_1d(a_bar, T, method)
+function a_bar = extrapolate_a_bar_1d(a_bar, T, varargin)
 %fills 'NaN' values in the 'a_bar' based on extrapolation 
 % extrapolation on state space, for each fixed time point separately
 %
 % method = 'linear', 'nearest', ... (see interp1.m)
+
+if ~isempty(varargin)
+    method = varargin{1};
+else
+    method = 'nearest';
+end
+
 
 [r, nx, nt] = size(a_bar);
 

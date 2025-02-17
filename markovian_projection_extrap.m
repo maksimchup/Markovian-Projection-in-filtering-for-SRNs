@@ -63,7 +63,7 @@ a_bar = a_bar ./ counts;
 
 if length(proj_ind) == 2
     a_bar = extrapolate_a_bar_2d(a_bar, T, 'linear');
-elseif lentgh(proj_ind) == 3
+elseif length(proj_ind) == 3
     a_bar = extrapolate_a_bar_3d(a_bar, T, 'linear');
 else
     warning(['Extrapolation for a_bar for ' num2str(length(proj_ind)) ...
