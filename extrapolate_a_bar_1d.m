@@ -33,6 +33,7 @@ for i = 1:r % for each reaction
             a_bar(i,:,it) = v;
         end
     end
+    a_bar(i,isnan(a_bar(i,:))) = nanmean(a_bar(i, :));
 end
 
 a_bar(isnan(a_bar)) = 0;

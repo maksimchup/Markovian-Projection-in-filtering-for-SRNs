@@ -80,7 +80,7 @@ for ir = 1:model.r
 end
 
 
-a_tilde = extrapolate_a_bar_1d(a_tilde, T, 'nearest');
+a_tilde = extrapolate_a_bar_1d(a_tilde, T, 'linear');
 
 a = @(x, t_) a_tilde(:, x(1)+1, find(t >= t_, 1));
 model_fmp = SRN(model.V(proj_ind, :), a);
@@ -120,20 +120,14 @@ disp(['Results saved to ' filename]);
 disp(' ')
 
 
-
-
-%% TAIL ESTIMATION
+%% Tail estimation (TAKES > 1 HOUR !)
 
 disp(' ')
 disp('TAIL ESTIMATION')
 
-
-d = 3;
-tail_estimation_linear_cascade;
-
 d = 5;
-tail_estimation_linear_cascade;
+%tail_estimation_linear_cascade;
 
 
-%% plot
+%% plot results
 plot_lin_cascade_sol

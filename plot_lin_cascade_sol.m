@@ -1,5 +1,5 @@
 %% This script plots solution for linear cascade model
-% (figures 5-7 in the paper)
+% (figures 5-8 in the paper)
 % you need to run 'main' first to get *.mat files with simulation results
 
 %% set plot params
@@ -48,8 +48,8 @@ hold on;
 stairs(t_true, Z_true(1, :), 'black', 'LineWidth', LineWidth, ...
     'DisplayName', '\textbf{Hidden trajectory}');
 plot(t, mean_ffsp, 'b', 'DisplayName', '\textbf{FFSP}'); 
-plot(t, mean_mp, 'r', 'DisplayName', '\textbf{Standard MP}'); 
-plot(t, mean_fmp, 'g', 'DisplayName', '\textbf{Filtered MP}'); 
+plot(t, mean_mp, 'r', 'DisplayName', '\textbf{Unconditional MP filter}'); 
+plot(t, mean_fmp, 'g', 'DisplayName', '\textbf{Conditional MP filter}'); 
 L = legend('Location', 'northeast', 'NumColumns', 1);
 L.AutoUpdate = 'off'; 
 xlabel('\textbf{Time}');
@@ -60,68 +60,54 @@ ylabel('\textbf{Copy number}');
 xlim([0 5])
 title('\textbf{(b)}')
 
-saveas(gcf, 'lin_cascade_sol.png');
+% save
+exportgraphics(gcf, 'linear_cascade_sol.pdf', 'ContentType', 'vector')
+saveas(gcf, 'linear_cascade_sol.png');
+
+
+
+%% PMF in log scale (Figure 6)
+figure('WindowStyle', WindowStyle, 'Units', 'Inches', ...
+    'Position', [0, 0, 10, 8]);
+hold on;
+plot(0:10, squeeze(sum(pi_ffsp(:, :, :, :, end), 2:4)), '-ob', ...
+    'MarkerSize', 14, 'MarkerFaceColor', 'b', ...
+    'DisplayName', '\textbf{FFSP}')
+
+% PF 
+pi_pf = zeros(11,1);
+for i = 1:M
+    ind = 1+X(1,i,end);
+    pi_pf(ind) = pi_pf(ind) + w(i,end);
+end
+
+plot(0:10, pi_pf, ...
+    '-om', 'DisplayName','\textbf{Particle Filter}') 
+
+
+plot(0:10, pi_mp(:, it), '-or', 'DisplayName', '\textbf{Unconditional MP filter}')
+plot(0:10, pi_fmp(:, it), '-og', 'DisplayName', '\textbf{Conditional MP filter}')
+legend('Location', 'southwest', 'NumColumns', 1);
+xlabel('\textbf{Copy number}');
+ylabel('\textbf{Probability}');
+xlim([0 10]);
+yscale('log')
+%text(5, 0.2, '\textbf{d = 5}', 'FontSize', 22); 
+
+exportgraphics(gcf, 'linear_cascade_log_distr.pdf', 'ContentType', 'vector')
+saveas(gcf, 'linear_cascade_log_distr.png');
 
 
 %% Convergence of error in estimating tail (Figure 7)
-set(0, 'defaultAxesFontSize', 27)
 
 figure('WindowStyle', WindowStyle, 'Units', 'Inches', ... 
-    'Position', [0, 0, 18, 8]);
-tiledlayout(1, 2, 'TileSpacing', 'compact', 'Padding', 'compact');
-
-
-
-%% errors d=3
-
-load Data/results/lin_cascade_3_tail_estimation.mat
-
-
-subplot1 = nexttile;
+    'Position', [0, 0, 10, 8]);
+tiledlayout('TileSpacing', 'compact', 'Padding', 'compact');
 hold on
 
-% PF 
-mean_error_pf = mean(abs(p_pf - p_ffsp), 2)/p_ffsp;
-ci_error_pf = 1.96./sqrt(M_rep).*std(abs(p_pf - p_ffsp)')/p_ffsp;
-errorbar(M_arr, mean_error_pf, ci_error_pf, ...
-    '-Om', 'LineWidth', LineWidth, 'DisplayName','\textbf{Particle Filter}') 
-
-% FMP
-mean_error_fmp = mean(abs(p_fmp - p_ffsp), 2)/p_ffsp;
-ci_error_fmp = 1.96./sqrt(M_rep).*std(abs(p_fmp - p_ffsp)')/p_ffsp;
-errorbar(M_arr, mean_error_fmp, ci_error_fmp, ...
-    '-Og', 'LineWidth', LineWidth, 'DisplayName','\textbf{Filtered MP}')  
-
-% MP
-mean_error_mp = mean(abs(p_mp - p_ffsp), 2)/p_ffsp;
-ci_error_mp = 1.96./sqrt(M_rep).*std(abs(p_mp - p_ffsp)')/p_ffsp;
-
-ind = find(ci_error_mp' >  mean_error_mp); %plot CI only if CI < mean
-ci_error_mp(ind) = NaN;
-errorbar(M_arr, mean_error_mp, ci_error_mp, ...
-     '-Or', 'LineWidth', LineWidth, 'DisplayName','\textbf{Standard MP}')  
-
-% ref line
-plot(M_arr, 100./sqrt(M_arr), ...
-    '--', 'LineWidth', 2, 'Color', 'black', ...
-    'DisplayName', '$\propto M^{-0.5}$') 
-
-
-ylim([1e-2 1e2])
-xlim([M_arr(1) M_arr(end)])
-title('\textbf{(b)}')
-text(M_arr(floor(length(M_arr)/2)), 3e-2, '\textbf{d = 5}');
-xscale('log')
-yscale('log')
-xlabel('\textbf{Sample size, M}')
-legend()
-
-%% errors d=5 
 
 load Data/results/lin_cascade_5_tail_estimation.mat
 
-subplot2 = nexttile;
-hold on
 
 % PF 
 mean_error_pf = mean(abs(p_pf - p_ffsp), 2)/p_ffsp;
@@ -133,38 +119,31 @@ errorbar(M_arr, mean_error_pf, ci_error_pf, ...
 mean_error_fmp = mean(abs(p_fmp - p_ffsp), 2)/p_ffsp;
 ci_error_fmp = 1.96./sqrt(M_rep).*std(abs(p_fmp - p_ffsp)')/p_ffsp;
 errorbar(M_arr, mean_error_fmp, ci_error_fmp, ...
-    '-Og', 'LineWidth', LineWidth, 'DisplayName','\textbf{Filtered MP}')  
-
-% MP
-mean_error_mp = mean(abs(p_mp - p_ffsp), 2)/p_ffsp;
-ci_error_mp = 1.96./sqrt(M_rep).*std(abs(p_mp - p_ffsp)')/p_ffsp;
-
-ind = find(ci_error_mp' >  mean_error_mp); %plot CI only if CI < mean
-ci_error_mp(ind) = NaN;
-errorbar(M_arr, mean_error_mp, ci_error_mp, ...
-     '-Or', 'LineWidth', LineWidth, 'DisplayName','\textbf{Standard MP}')  
+    '-Og', 'LineWidth', LineWidth, 'DisplayName','\textbf{Conditional MP filter}')  
 
 % ref line
-plot(M_arr, 100./sqrt(M_arr), ...
+plot(M_arr, 25./sqrt(M_arr), ...
     '--', 'LineWidth', 2, 'Color', 'black', ...
-    'DisplayName', '$\propto M^{-0.5}$') 
+    'DisplayName', '$\propto M^{-1/2}$') 
 
 
-ylim([1e-2 1e2])
-xlim([M_arr(1) M_arr(end)])
-title('\textbf{(b)}')
-text(M_arr(floor(length(M_arr)/2)), 3e-2, '\textbf{d = 5}');
+ylim([3e-2 10])
+xlim([512 65536])
 xscale('log')
 yscale('log')
 xlabel('\textbf{Sample size, M}')
+ylabel('\textbf{Relative Error}')
 legend()
 
 
 
+exportgraphics(gcf, 'linear_cascade_errors.pdf', 'ContentType', 'vector')
 saveas(gcf, 'linear_cascade_errors.png');
 
 
-%% CPU times (Figure 6)
+
+
+%% CPU times (Figure 8)
 set(0, 'defaultAxesFontSize', 18)
 
 figure('WindowStyle', WindowStyle, 'Units', 'Inches', ...
@@ -185,12 +164,13 @@ b(2).FaceColor = 'r';
 b(3).FaceColor = 'g';
 xlabel('\textbf{Dimensionality, d}');
 ylabel('\textbf{CPU Time (s)}');
-legend('\textbf{FFSP for full model}', '\textbf{Standard MP}', ...
-    '\textbf{Filtered MP}', 'Location', 'northwest');
+legend('\textbf{FFSP for full model}', '\textbf{Unconditional MP filter}', ...
+    '\textbf{Conditional MP filter}', 'Location', 'northwest');
 yscale('log')
 
 
-saveas(gcf, 'cpu_times.png');
+exportgraphics(gcf, 'linear_cascade_cpu_times.pdf', 'ContentType', 'vector')
+saveas(gcf, 'linear_cascade_cpu_times.png');
 
 
 

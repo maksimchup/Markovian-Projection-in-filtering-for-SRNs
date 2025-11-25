@@ -3,7 +3,7 @@
 % you need to run 'main' first to get *.mat files with simulation results
 %% set plot params
 
-time_hist_1 = 2; % time for hist1
+time_hist_1 = 1; % time for hist1
 time_hist_2 = 4.5; % time for hist2
 
 LineWidth = 4;
@@ -16,7 +16,7 @@ set(groot, 'defaultAxesTickLabelInterpreter', 'latex');
 set(groot, 'defaultLegendInterpreter', 'latex'); 
 set(groot, 'defaultTextFontWeight', 'bold'); 
 
-WindowStyle = 'docked';
+WindowStyle = 'normal';
 
 %%
 figure('WindowStyle', WindowStyle, 'Units', 'Inches', 'Position', [0, 0, 18, 12]);
@@ -48,8 +48,8 @@ subplot2 = nexttile;
 hold on;
 stairs(t_true, Z_true(estimated_ind, :), 'black', 'LineWidth', LineWidth, 'DisplayName', '\textbf{Hidden trajectory}');
 plot(t, mean_ffsp, 'b', 'DisplayName', '\textbf{FFSP}'); 
-plot(t, mean_mp, 'r', 'DisplayName', '\textbf{Standard MP}'); 
-plot(t, mean_fmp, 'g', 'DisplayName', '\textbf{Filtered MP}'); 
+plot(t, mean_mp, 'r', 'DisplayName', '\textbf{Unconditional MP filter}'); 
+plot(t, mean_fmp, 'g', 'DisplayName', '\textbf{Conditional MP filter}'); 
 L = legend('Location', 'southeast', 'NumColumns', 1);
 L.AutoUpdate = 'off'; 
 xlabel('\textbf{Time}');
@@ -69,12 +69,12 @@ it = find(t >= time_hist_1, 1);
 subplot3 = nexttile;
 hold on;
 plot(0:max_mRNA, squeeze(sum(pi_ffsp(:, :, :, :, :, :, it), [1 2 3 4 5])), '-ob', 'DisplayName', '\textbf{FFSP}')
-plot(0:max_mRNA, pi_mp(:, it), '-or', 'DisplayName', '\textbf{Standard MP}')
-plot(0:max_mRNA, pi_fmp(:, it), '-og', 'DisplayName', '\textbf{Filtered MP}')
+plot(0:max_mRNA, pi_mp(:, it), '-or', 'DisplayName', '\textbf{Unconditional MP filter}')
+plot(0:max_mRNA, pi_fmp(:, it), '-og', 'DisplayName', '\textbf{Conditional MP filter}')
 legend('Location', 'northeast', 'NumColumns', 1);
 xlabel('\textbf{Copy number}');
 ylabel('\textbf{Probability}');
-xlim([0 10]);
+xlim([0 13]);
 %text(0.05, 0.9, '\textbf{(c)}', 'Units', 'normalized'); 
 title('\textbf{(c)}')
 
@@ -84,12 +84,12 @@ it = find(t >= time_hist_2, 1);
 subplot4 = nexttile;
 hold on;
 plot(0:max_mRNA, squeeze(sum(pi_ffsp(:, :, :, :, :, :, it), [1 2 3 4 5])), '-ob', 'DisplayName', '\textbf{FFSP}')
-plot(0:max_mRNA, pi_mp(:, it), '-or', 'DisplayName', '\textbf{Standard MP}')
-plot(0:max_mRNA, pi_fmp(:, it), '-og', 'DisplayName', '\textbf{Filtered MP}')
+plot(0:max_mRNA, pi_mp(:, it), '-or', 'DisplayName', '\textbf{Unconditional MP filter}')
+plot(0:max_mRNA, pi_fmp(:, it), '-og', 'DisplayName', '\textbf{Conditional MP filter}')
 legend('Location', 'northeast', 'NumColumns', 1);
 xlabel('\textbf{Copy number}');
 ylabel('\textbf{Probability}');
-xlim([0 10]);
+xlim([0 13]);
 %text(0.05, 0.9, '\textbf{(d)}', 'Units', 'normalized'); 
 title('\textbf{(d)}')
 
@@ -114,4 +114,6 @@ x_end_2 = pos4(1) + pos4(3) / 1.5;
 y_end_2 = pos4(2) + pos4(4) + 0.02; 
 annotation('arrow', [x_start_2, x_end_2], [y_start_2, y_end_2], 'Color', 'black', 'LineWidth', 3);
 
-saveas(gcf, 'bistable_network_sol.png');
+% save
+exportgraphics(gcf, 'bistable_network_sol.pdf', 'ContentType', 'vector')
+saveas(gcf, 'bistable_network_sol.png')

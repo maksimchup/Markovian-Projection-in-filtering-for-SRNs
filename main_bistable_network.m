@@ -1,5 +1,5 @@
 clear;
-rng(0);
+rng(0); 
 %% load original model
 load Data/models/bistable_gene_network.mat
 
