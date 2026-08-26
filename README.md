@@ -3,8 +3,8 @@
 This repository contains an implementation of the Markov projection methods for the filtering problem for Stochastic Reaction Networks (SRNs). Two methods for dimensionality reduction are developed: standard Markovian Projection (MP) and Filtered Markov Projection (FMP).
 
 A detailed description of the methods is provided in the paper:
-> Hammouda, C. B., Chupin, M., Münker, S., & Tempone, R. (2025). Filtered Markovian Projection: Dimensionality Reduction in Filtering for Stochastic Reaction Networks. 
-[arXiv preprint arXiv:2502.07918.]([http://www.example.com](https://arxiv.org/abs/2502.07918))
+> Hammouda, C.B., Chupin, M., Münker, S. et al. Filtered Markovian projection: dimensionality reduction in filtering for stochastic reaction networks. Stat Comput 36, 189 (2026). https://doi.org/10.1007/s11222-026-10939-0
+
 
 ## Running simulations
 
